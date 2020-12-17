@@ -3,6 +3,7 @@ package listeners;
 
 
 import audio.GuildMusicManager;
+import audio.TrackScheduler;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -34,6 +35,8 @@ import java.util.*;
 
 public class JoinVoice extends ListenerAdapter {
     public static ReadyEvent emitter;
+    private AudioPlayerManager playerManager;
+    private Map<Long, GuildMusicManager> musicManagers;
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
@@ -49,12 +52,6 @@ public class JoinVoice extends ListenerAdapter {
 
         Random r = new Random();
         int y = r.nextInt(Setup.playlists.size());
-
-        this.musicManagers = new HashMap<>();
-
-        this.playerManager = new DefaultAudioPlayerManager();
-        AudioSourceManagers.registerRemoteSources(playerManager);
-        AudioSourceManagers.registerLocalSource(playerManager);
 
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
                 .setAccessToken(ClientAccess.clientCredentials.getAccessToken())
@@ -97,11 +94,18 @@ public class JoinVoice extends ListenerAdapter {
         };
     }
 
-    private AudioPlayerManager playerManager;
-    private Map<Long, GuildMusicManager> musicManagers;
+    public JoinVoice() {
+        this.musicManagers = new HashMap<>();
+
+        this.playerManager = new DefaultAudioPlayerManager();
+        AudioSourceManagers.registerRemoteSources(playerManager);
+        AudioSourceManagers.registerLocalSource(playerManager);
+    }
+
 
     private synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
         long guildId = Long.parseLong(guild.getId());
+
         GuildMusicManager musicManager = musicManagers.get(guildId);
 
         if (musicManager == null) {
@@ -149,18 +153,19 @@ public class JoinVoice extends ListenerAdapter {
 
     private void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
         connectToFirstVoiceChannel(guild.getAudioManager());
-
         musicManager.scheduler.queue(track);
     }
 
-    private void skipTrack(TextChannel channel) {
+    public void skipTrack(TextChannel channel) {
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
         musicManager.scheduler.nextTrack();
-
-        channel.sendMessage("Skipped to next track.").queue();
     }
 
     private static void connectToFirstVoiceChannel(AudioManager audioManager) {
                 audioManager.openAudioConnection(audioManager.getGuild().getVoiceChannelById(Setup.VOICECHANNELID));
+    }
+
+     public void close(Guild guild) {
+         guild.getAudioManager();
     }
 }
