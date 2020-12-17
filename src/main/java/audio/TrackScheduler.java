@@ -1,6 +1,7 @@
 package audio;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.event.AudioEvent;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
@@ -8,9 +9,11 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
 import core.Main;
 import listeners.JoinVoice;
 import net.dv8tion.jda.api.entities.Activity;
+import utilities.Setup;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This class schedules tracks for the audio player. It contains the queue of tracks.
@@ -47,7 +50,12 @@ public class TrackScheduler extends AudioEventAdapter {
     public void nextTrack() {
         // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
         // giving null to startTrack, which is a valid argument and will simply stop the player.
-        player.startTrack(queue.poll(), false);
+        if(queue.size() <= 1) {
+            JoinVoice joinVoice = new JoinVoice();
+            joinVoice.playMusic(JoinVoice.emitter);
+        }else {
+            player.startTrack(queue.poll(), false);
+        }
     }
 
     @Override
@@ -65,19 +73,10 @@ public class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         Main.jda.getPresence().setActivity(Activity.playing(track.getInfo().title));
+        Main.jda.getTextChannelById(Setup.TEXTCHANNELID).sendMessage("Now Playing: ```\n" + track.getInfo().title + "\n```").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
     }
 
     public void clear() {
         queue.clear();
-    }
-
-    @Override
-    public void onTrackStuck(AudioPlayer player, AudioTrack track, long thresholdMs) {
-        nextTrack();
-    }
-
-    @Override
-    public void onTrackException(AudioPlayer player, AudioTrack track, FriendlyException exception) {
-        nextTrack();
     }
 }

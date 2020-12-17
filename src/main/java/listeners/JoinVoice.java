@@ -37,6 +37,13 @@ public class JoinVoice extends ListenerAdapter {
     public static ReadyEvent emitter;
     private AudioPlayerManager playerManager;
     private Map<Long, GuildMusicManager> musicManagers;
+    public static int tracks;
+    public static int y;
+
+    public static void getRandom() {
+        Random r = new Random();
+        y = r.nextInt(Setup.playlists.size());
+    }
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
@@ -45,14 +52,11 @@ public class JoinVoice extends ListenerAdapter {
         Main.jda = event.getJDA();
         Setup.playlistInit();
 
-        playMusic(event);
+            getRandom();
+            playMusic(event);
     }
 
     public void playMusic(@NotNull ReadyEvent event) {
-
-        Random r = new Random();
-        int y = r.nextInt(Setup.playlists.size());
-
         SpotifyApi spotifyApi = new SpotifyApi.Builder()
                 .setAccessToken(ClientAccess.clientCredentials.getAccessToken())
                 .build();
@@ -136,6 +140,7 @@ public class JoinVoice extends ListenerAdapter {
                     firstTrack = playlist.getTracks().get(0);
                 }
                 play(channel.getGuild(), musicManager, firstTrack);
+                tracks++;
             }
 
             @Override

@@ -24,7 +24,7 @@ public class Main extends ListenerAdapter {
         ClientAccess.clientCredentials_Sync();
 
         JDABuilder builder = JDABuilder.createDefault(Setup.TOKEN);
-        builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
+        builder.disableCache(CacheFlag.MEMBER_OVERRIDES);
         builder.setBulkDeleteSplittingEnabled(false);
         builder.setCompression(Compression.NONE);
 
