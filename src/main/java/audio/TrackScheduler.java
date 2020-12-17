@@ -4,6 +4,9 @@ import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackEndReason;
+import core.Main;
+import listeners.JoinVoice;
+import net.dv8tion.jda.api.entities.Activity;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -51,6 +54,17 @@ public class TrackScheduler extends AudioEventAdapter {
         // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
         if (endReason.mayStartNext) {
             nextTrack();
+            if(queue.size() <= 1) {
+                JoinVoice joinVoice = new JoinVoice();
+                joinVoice.playMusic(JoinVoice.emitter);
+            }
         }
     }
+
+    @Override
+    public void onTrackStart(AudioPlayer player, AudioTrack track) {
+        Main.jda.getPresence().setActivity(Activity.playing(track.getInfo().title));
+    }
+
+
 }

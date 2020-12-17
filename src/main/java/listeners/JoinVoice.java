@@ -19,7 +19,6 @@ import com.wrapper.spotify.model_objects.specification.Track;
 import com.wrapper.spotify.requests.data.playlists.GetPlaylistRequest;
 import com.wrapper.spotify.requests.data.tracks.GetTrackRequest;
 import core.Main;
-import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
@@ -31,14 +30,25 @@ import spotify.ClientAccess;
 import utilities.Setup;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class JoinVoice extends ListenerAdapter {
+    public static ReadyEvent emitter;
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
+        emitter = event;
+
         Main.jda = event.getJDA();
+        Setup.playlistInit();
+
+        playMusic(event);
+    }
+
+    public void playMusic(@NotNull ReadyEvent event) {
+
+        Random r = new Random();
+        int y = r.nextInt(Setup.playlists.size());
 
         this.musicManagers = new HashMap<>();
 
@@ -50,7 +60,7 @@ public class JoinVoice extends ListenerAdapter {
                 .setAccessToken(ClientAccess.clientCredentials.getAccessToken())
                 .build();
 
-        GetPlaylistRequest tracks = spotifyApi.getPlaylist("2pEFg2DUU1SJ5TxIZmkkXT").build();
+        GetPlaylistRequest tracks = spotifyApi.getPlaylist(Setup.playlists.get(y)).build();
         Playlist fuckinghell = null;
         try {
             fuckinghell = tracks.execute();
@@ -64,6 +74,8 @@ public class JoinVoice extends ListenerAdapter {
         Paging<PlaylistTrack> pTracks = fuckinghell.getTracks();
         PlaylistTrack[] allTracks = pTracks.getItems();
 
+        Collections.shuffle(Arrays.asList(allTracks));
+
         for (int i = 0; i < allTracks.length; i++) {
             GetTrackRequest trackRequest =  spotifyApi.getTrack(allTracks[i].getTrack().getId()).build();
             try {
@@ -73,11 +85,6 @@ public class JoinVoice extends ListenerAdapter {
                         event.getJDA().getTextChannelById(Setup.TEXTCHANNELID),
                         "ytsearch: " + track.getArtists()[0].getName() + " " + track.getName()
                 );
-
-/*
-                Main.jda.getPresence().setActivity(Activity.playing(track.getInfo().title));
-*/
-
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (SpotifyWebApiException e) {
@@ -112,8 +119,6 @@ public class JoinVoice extends ListenerAdapter {
         playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
             @Override
             public void trackLoaded(AudioTrack track) {
-                channel.sendMessage("Adding to queue **" + track.getInfo().title + "**").queue();
-
                 play(channel.getGuild(), musicManager, track);
             }
 
@@ -124,22 +129,18 @@ public class JoinVoice extends ListenerAdapter {
                 if (firstTrack == null) {
                     firstTrack = playlist.getTracks().get(0);
                 }
-
-                channel.sendMessage("Adding to queue " + firstTrack.getInfo().title + " (first track of playlist " + playlist.getName() + ")").queue();
-
                 play(channel.getGuild(), musicManager, firstTrack);
             }
 
             @Override
             public void noMatches() {
-                channel.sendMessage("Nothing found by " + trackUrl).queue();
+
             }
 
             @Override
-            public void loadFailed(FriendlyException exception) {
-                channel.sendMessage("Could not play: " + exception.getMessage()).queue();
-            }
+            public void loadFailed(FriendlyException e) {
 
+            }
         });
 
     }
