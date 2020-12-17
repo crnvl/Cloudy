@@ -71,6 +71,8 @@ public class JoinVoice extends ListenerAdapter {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        Main.jda.getGuildById(Setup.GUILDID).getSelfMember().modifyNickname(fuckinghell.getName()).queue();
         Paging<PlaylistTrack> pTracks = fuckinghell.getTracks();
         PlaylistTrack[] allTracks = pTracks.getItems();
 

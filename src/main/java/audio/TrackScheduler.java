@@ -16,7 +16,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 public class TrackScheduler extends AudioEventAdapter {
     private final AudioPlayer player;
-    private final BlockingQueue<AudioTrack> queue;
+    public final BlockingQueue<AudioTrack> queue;
 
     /**
      * @param player The audio player this scheduler uses
@@ -64,6 +64,10 @@ public class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         Main.jda.getPresence().setActivity(Activity.playing(track.getInfo().title));
+    }
+
+    public void clear() {
+        queue.clear();
     }
 
 

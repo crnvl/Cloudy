@@ -1,5 +1,6 @@
 package core;
 
+import listeners.Commands;
 import listeners.JoinVoice;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -27,7 +28,7 @@ public class Main extends ListenerAdapter {
         builder.setBulkDeleteSplittingEnabled(false);
         builder.setCompression(Compression.NONE);
 
-        builder.addEventListeners(new JoinVoice());
+        builder.addEventListeners(new JoinVoice(), new Commands());
         configureMemoryUsage(builder);
 
         builder.build();
