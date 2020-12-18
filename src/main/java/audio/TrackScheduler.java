@@ -47,14 +47,18 @@ public class TrackScheduler extends AudioEventAdapter {
     /**
      * Start the next track, stopping the current one if it is playing.
      */
-    public void nextTrack() {
+    public static void nextTrack() {
         // Start the next track, regardless of if something is already playing or not. In case queue was empty, we are
         // giving null to startTrack, which is a valid argument and will simply stop the player.
-        if(queue.size() <= 1) {
-            JoinVoice joinVoice = new JoinVoice();
-            joinVoice.playMusic(JoinVoice.emitter);
+        JoinVoice jv = new JoinVoice();
+        if (JoinVoice.queueURLs.size() < (JoinVoice.hashIndex - 1)) {
+            JoinVoice.hashIndex++;
+            jv.loadAndPlay(Main.jda.getTextChannelById(Setup.TEXTCHANNELID), JoinVoice.queueURLs.get(JoinVoice.hashIndex));
         }else {
-            player.startTrack(queue.poll(), false);
+            JoinVoice.hashIndex = 0;
+            JoinVoice.queueURLs.clear();
+            JoinVoice.queueInfo.clear();
+            jv.triggerPlayer(JoinVoice.emitter);
         }
     }
 
@@ -62,17 +66,22 @@ public class TrackScheduler extends AudioEventAdapter {
     public void onTrackEnd(AudioPlayer player, AudioTrack track, AudioTrackEndReason endReason) {
         // Only start the next track if the end reason is suitable for it (FINISHED or LOAD_FAILED)
         if (endReason.mayStartNext) {
-            nextTrack();
-            if(queue.size() <= 1) {
-                JoinVoice joinVoice = new JoinVoice();
-                joinVoice.playMusic(JoinVoice.emitter);
+            JoinVoice jv = new JoinVoice();
+            if (JoinVoice.queueURLs.size() < (JoinVoice.hashIndex - 1)) {
+                JoinVoice.hashIndex++;
+                jv.loadAndPlay(Main.jda.getTextChannelById(Setup.TEXTCHANNELID), JoinVoice.queueURLs.get(JoinVoice.hashIndex));
+            }else {
+                JoinVoice.hashIndex = 0;
+                JoinVoice.queueURLs.clear();
+                JoinVoice.queueInfo.clear();
+                jv.triggerPlayer(JoinVoice.emitter);
             }
         }
     }
 
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
-        Main.jda.getPresence().setActivity(Activity.playing(track.getInfo().title));
+        Main.jda.getPresence().setActivity(Activity.listening(JoinVoice.queueInfo.get(JoinVoice.hashIndex)));
         Main.jda.getTextChannelById(Setup.TEXTCHANNELID).sendMessage("Now Playing: ```\n" + track.getInfo().title + "\n```").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
     }
 

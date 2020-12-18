@@ -3,7 +3,6 @@ package listeners;
 
 
 import audio.GuildMusicManager;
-import audio.TrackScheduler;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
@@ -37,8 +36,10 @@ public class JoinVoice extends ListenerAdapter {
     public static ReadyEvent emitter;
     private AudioPlayerManager playerManager;
     private Map<Long, GuildMusicManager> musicManagers;
-    public static int tracks;
     public static int y;
+    public static int hashIndex;
+    public static HashMap<Integer, String> queueURLs = new HashMap<>();
+    public static HashMap<Integer, String> queueInfo = new HashMap<>();
 
     public static void getRandom() {
         Random r = new Random();
@@ -51,9 +52,14 @@ public class JoinVoice extends ListenerAdapter {
 
         Main.jda = event.getJDA();
         Setup.playlistInit();
+        triggerPlayer(event);
+    }
 
-            getRandom();
-            playMusic(event);
+    public void triggerPlayer(@NotNull ReadyEvent event) {
+        getRandom();
+        playMusic(event);
+        hashIndex = 0;
+        loadAndPlay(event.getJDA().getTextChannelById(Setup.TEXTCHANNELID), queueURLs.get(hashIndex));
     }
 
     public void playMusic(@NotNull ReadyEvent event) {
@@ -83,11 +89,11 @@ public class JoinVoice extends ListenerAdapter {
             GetTrackRequest trackRequest =  spotifyApi.getTrack(allTracks[i].getTrack().getId()).build();
             try {
                 Track track = trackRequest.execute();
+                String url = "ytsearch: " + track.getArtists()[0].getName() + " " + track.getName();
 
-                loadAndPlay(
-                        event.getJDA().getTextChannelById(Setup.TEXTCHANNELID),
-                        "ytsearch: " + track.getArtists()[0].getName() + " " + track.getName()
-                );
+                queueURLs.put(i, url);
+                queueInfo.put(i , track.getArtists()[0].getName() + " - " + track.getName());
+
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (SpotifyWebApiException e) {
@@ -122,7 +128,7 @@ public class JoinVoice extends ListenerAdapter {
         return musicManager;
     }
 
-    private void loadAndPlay(final TextChannel channel, final String trackUrl) {
+    public void loadAndPlay(final TextChannel channel, final String trackUrl) {
 
         GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
 
@@ -140,7 +146,6 @@ public class JoinVoice extends ListenerAdapter {
                     firstTrack = playlist.getTracks().get(0);
                 }
                 play(channel.getGuild(), musicManager, firstTrack);
-                tracks++;
             }
 
             @Override
@@ -153,7 +158,6 @@ public class JoinVoice extends ListenerAdapter {
 
             }
         });
-
     }
 
     private void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {

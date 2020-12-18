@@ -24,18 +24,20 @@ public class Commands extends ListenerAdapter {
             JoinVoice joinVoice;
             switch (args[0]) {
                 case "next":
+                    joinVoice = new JoinVoice();
+                    joinVoice.close(event.getGuild());
+
                     trackScheduler = new TrackScheduler(GuildMusicManager.player);
                     trackScheduler.clear();
-                    joinVoice = new JoinVoice();
+                    JoinVoice.hashIndex = JoinVoice.queueURLs.size();
                     JoinVoice.getRandom();
-                    joinVoice.playMusic(JoinVoice.emitter);
+                    TrackScheduler.nextTrack();
 
                     message.getTextChannel().sendMessage(":white_check_mark: **Skipped to the next playlist!**").queue(message1 -> message1.delete().queueAfter(10, TimeUnit.SECONDS));
                     event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
                     break;
                 case "skip":
                         trackScheduler = new TrackScheduler(GuildMusicManager.player);
-
                         trackScheduler.nextTrack();
                         message.getTextChannel().sendMessage(":white_check_mark: **Playing the next track!**").queue(message1 -> message1.delete().queueAfter(10, TimeUnit.SECONDS));
                     event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
