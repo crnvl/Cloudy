@@ -82,7 +82,6 @@ public class TrackScheduler extends AudioEventAdapter {
     @Override
     public void onTrackStart(AudioPlayer player, AudioTrack track) {
         Main.jda.getPresence().setActivity(Activity.listening(JoinVoice.queueInfo.get(JoinVoice.hashIndex)));
-        Main.jda.getTextChannelById(Setup.TEXTCHANNELID).sendMessage("Now Playing: ```\n" + track.getInfo().title + "\n```").queue(message -> message.delete().queueAfter(10, TimeUnit.SECONDS));
     }
 
     public void clear() {
