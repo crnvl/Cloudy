@@ -58,7 +58,9 @@ public class TrackScheduler extends AudioEventAdapter {
             JoinVoice.queueInfo.clear();
             jv.triggerPlayer(JoinVoice.emitter);
         }else {
-            JoinVoice.hashIndex++;
+            if(!Setup.REPEAT)
+                JoinVoice.hashIndex++;
+
             jv.loadAndPlay(Main.jda.getTextChannelById(Setup.TEXTCHANNELID), JoinVoice.queueURLs.get(JoinVoice.hashIndex));
         }
     }
@@ -74,7 +76,8 @@ public class TrackScheduler extends AudioEventAdapter {
                 JoinVoice.queueInfo.clear();
                 jv.triggerPlayer(JoinVoice.emitter);
             }else {
-                JoinVoice.hashIndex++;
+                if(!Setup.REPEAT)
+                    JoinVoice.hashIndex++;
                 jv.loadAndPlay(Main.jda.getTextChannelById(Setup.TEXTCHANNELID), JoinVoice.queueURLs.get(JoinVoice.hashIndex));
             }
         }

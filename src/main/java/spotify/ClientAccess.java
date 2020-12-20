@@ -7,6 +7,9 @@ import com.wrapper.spotify.requests.authorization.client_credentials.ClientCrede
 import utilities.Setup;
 
 import java.io.IOException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class ClientAccess {
 
@@ -28,6 +31,16 @@ public class ClientAccess {
             spotifyApi.setAccessToken(clientCredentials.getAccessToken());
 
             System.out.println("Expires in: " + clientCredentials.getExpiresIn());
+
+            Runnable helloRunnable = new Runnable() {
+                public void run() {
+                    spotifyApi.setAccessToken(clientCredentials.getAccessToken());
+                }
+            };
+
+            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+            executor.scheduleAtFixedRate(helloRunnable, 0, clientCredentials.getExpiresIn(), TimeUnit.SECONDS);
+
         } catch (IOException | SpotifyWebApiException e) {
             System.out.println("Error: " + e.getMessage());
         }

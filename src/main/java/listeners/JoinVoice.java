@@ -205,13 +205,9 @@ public class JoinVoice extends ListenerAdapter {
     }
 
     private void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
-        connectToFirstVoiceChannel(guild.getAudioManager());
+        if (!guild.getSelfMember().getVoiceState().inVoiceChannel())
+            connectToFirstVoiceChannel(guild.getAudioManager());
         musicManager.scheduler.queue(track);
-    }
-
-    public void skipTrack(TextChannel channel) {
-        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
-        musicManager.scheduler.nextTrack();
     }
 
     private static void connectToFirstVoiceChannel(AudioManager audioManager) {

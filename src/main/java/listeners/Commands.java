@@ -73,16 +73,26 @@ public class Commands extends ListenerAdapter {
                                 "\n```").queue();
                     }
                     break;
+                case "loop":
+                    if(Setup.REPEAT) {
+                        Setup.REPEAT = false;
+                    }else {
+                        Setup.REPEAT = true;
+                    }
+                    message.getTextChannel().sendMessage(":white_check_mark: Looping has been set to " + Setup.REPEAT).queue(message1 -> message1.delete().queueAfter(10, TimeUnit.SECONDS));
+                    event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
+                    break;
                 case "help":
                         event.getTextChannel().sendMessage(
                                 new EmbedBuilder()
                                 .setColor(Color.WHITE)
                                 .setTitle("My Commands")
-                                .addField("next", "Selects a new playlist", false)
-                                        .addField("skip", "Plays the next track in the queue", false)
-                                        .addField("restart", "Restarts all Audiosystems", false)
-                                        .addField("join", "Makes me join your current voicechannel", false)
-                                        .addField("playlist", "Select a playlist", false)
+                                .addField("next", "Selects a new playlist.", false)
+                                        .addField("skip", "Plays the next track in the queue.", false)
+                                        .addField("restart", "Restarts all Audiosystems.", false)
+                                        .addField("join", "Makes me join your current voicechannel.", false)
+                                        .addField("playlist", "Select a playlist.", false)
+                                        .addField("loop", "Repeat the current track.", false)
                                 .build()
                         ).queue();
                     break;
