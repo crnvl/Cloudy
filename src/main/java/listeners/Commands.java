@@ -79,7 +79,7 @@ public class Commands extends ListenerAdapter {
                     }else {
                         Setup.REPEAT = true;
                     }
-                    message.getTextChannel().sendMessage(":white_check_mark: Looping has been set to " + Setup.REPEAT).queue(message1 -> message1.delete().queueAfter(10, TimeUnit.SECONDS));
+                    message.getTextChannel().sendMessage(":white_check_mark: **Looping has been set to " + Setup.REPEAT + "**").queue(message1 -> message1.delete().queueAfter(10, TimeUnit.SECONDS));
                     event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
                     break;
                 case "help":
