@@ -36,7 +36,7 @@ public class JoinVoice extends ListenerAdapter {
     public static ReadyEvent emitter;
     private AudioPlayerManager playerManager;
     private Map<Long, GuildMusicManager> musicManagers;
-    public static int y;
+    public static int y = 0;
     public static int hashIndex;
     public static HashMap<Integer, String> queueURLs = new HashMap<>();
     public static HashMap<Integer, String> queueInfo = new HashMap<>();
@@ -49,16 +49,18 @@ public class JoinVoice extends ListenerAdapter {
     @Override
     public void onReady(@NotNull ReadyEvent event) {
         emitter = event;
-
         Main.jda = event.getJDA();
-        Setup.playlistInit();
         triggerPlayer(event);
     }
 
     public void triggerPlayer(@NotNull ReadyEvent event) {
         getRandom();
         playMusic(event);
-        hashIndex = 0;
+        loadAndPlay(event.getJDA().getTextChannelById(Setup.TEXTCHANNELID), queueURLs.get(hashIndex));
+    }
+
+    public void triggerSelectedPlayer(@NotNull ReadyEvent event, int playlist) {
+        playSelectedMusic(event, playlist);
         loadAndPlay(event.getJDA().getTextChannelById(Setup.TEXTCHANNELID), queueURLs.get(hashIndex));
     }
 
@@ -68,6 +70,48 @@ public class JoinVoice extends ListenerAdapter {
                 .build();
 
         GetPlaylistRequest tracks = spotifyApi.getPlaylist(Setup.playlists.get(y)).build();
+        Playlist fuckinghell = null;
+        try {
+            fuckinghell = tracks.execute();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (SpotifyWebApiException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Main.jda.getGuildById(Setup.GUILDID).getSelfMember().modifyNickname(fuckinghell.getName()).queue();
+        Paging<PlaylistTrack> pTracks = fuckinghell.getTracks();
+        PlaylistTrack[] allTracks = pTracks.getItems();
+
+        Collections.shuffle(Arrays.asList(allTracks));
+
+        for (int i = 0; i < allTracks.length; i++) {
+            GetTrackRequest trackRequest =  spotifyApi.getTrack(allTracks[i].getTrack().getId()).build();
+            try {
+                Track track = trackRequest.execute();
+                String url = "ytsearch: " + track.getArtists()[0].getName() + " " + track.getName();
+
+                queueURLs.put(i, url);
+                queueInfo.put(i , track.getArtists()[0].getName() + " - " + track.getName());
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (SpotifyWebApiException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        };
+    }
+
+    public void playSelectedMusic(@NotNull ReadyEvent event, int playlist) {
+        SpotifyApi spotifyApi = new SpotifyApi.Builder()
+                .setAccessToken(ClientAccess.clientCredentials.getAccessToken())
+                .build();
+
+        GetPlaylistRequest tracks = spotifyApi.getPlaylist(Setup.playlists.get(playlist)).build();
         Playlist fuckinghell = null;
         try {
             fuckinghell = tracks.execute();

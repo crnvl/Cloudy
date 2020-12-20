@@ -21,7 +21,10 @@ public class Main extends ListenerAdapter {
     public static JDA jda;
 
     public static void main(String[] args) throws LoginException, ParseException {
+        Setup.playlistInit();
         ClientAccess.clientCredentials_Sync();
+
+        Setup.playlists();
 
         JDABuilder builder = JDABuilder.createDefault(Setup.TOKEN);
         builder.disableCache(CacheFlag.MEMBER_OVERRIDES);
