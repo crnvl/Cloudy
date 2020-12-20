@@ -31,7 +31,6 @@ public class Commands extends ListenerAdapter {
             switch (args[0]) {
                 case "next":
                     joinVoice = new JoinVoice();
-                    joinVoice.close(event.getGuild());
 
                     trackScheduler = new TrackScheduler(GuildMusicManager.player);
                     trackScheduler.clear();
@@ -63,7 +62,7 @@ public class Commands extends ListenerAdapter {
                     if(args.length >= 2) {
                         joinVoice = new JoinVoice();
                         joinVoice.triggerSelectedPlayer(JoinVoice.emitter, Integer.parseInt(args[1]));
-                        joinVoice.close(event.getGuild());
+
 
                         message.getTextChannel().sendMessage(":white_check_mark: **Skipping to playlist \"" + Setup.getPlaylist(Integer.parseInt(args[1])) + "\"...**").queue(message1 -> message1.delete().queueAfter(10, TimeUnit.SECONDS));
                         event.getMessage().delete().queueAfter(10, TimeUnit.SECONDS);
