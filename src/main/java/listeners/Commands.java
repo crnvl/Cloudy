@@ -2,6 +2,8 @@ package listeners;
 
 import audio.GuildMusicManager;
 import audio.TrackScheduler;
+import com.github.connyscode.ctils.jTrack.Track;
+import com.github.connyscode.ctils.jTrack.backend.types.SearchResult;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -10,6 +12,8 @@ import org.jetbrains.annotations.NotNull;
 import utilities.Setup;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static core.Main.jTrackC;
