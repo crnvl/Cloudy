@@ -4,6 +4,7 @@ import com.wrapper.spotify.SpotifyApi;
 import com.wrapper.spotify.exceptions.SpotifyWebApiException;
 import com.wrapper.spotify.model_objects.credentials.ClientCredentials;
 import com.wrapper.spotify.requests.authorization.client_credentials.ClientCredentialsRequest;
+import org.apache.hc.core5.http.ParseException;
 import utilities.Setup;
 
 import javax.swing.*;
@@ -28,8 +29,16 @@ public class ClientAccess {
             spotifyApi.setAccessToken(clientCredentials.getAccessToken());
 
             Timer stonks = new Timer(clientCredentials.getExpiresIn() * 1000, e -> {
+                try {
+                    clientCredentials = clientCredentialsRequest.execute();
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                } catch (SpotifyWebApiException spotifyWebApiException) {
+                    spotifyWebApiException.printStackTrace();
+                } catch (ParseException parseException) {
+                    parseException.printStackTrace();
+                }
                 spotifyApi.setAccessToken(clientCredentials.getAccessToken());
-                System.out.println(clientCredentials.getExpiresIn());
             }
             );
             stonks.start();
