@@ -123,6 +123,7 @@ public class Commands extends ListenerAdapter {
                                     .addField("join", "Makes me join your current voicechannel.", false)
                                     .addField("playlist", "Select a playlist.", false)
                                     .addField("loop", "Repeat the current track.", false)
+                                    .addField("queue", "Shows the current queue.", false)
                                     .addField("lyrics", "Read the lyrics of the song that's playing.", false)
                                     .build()
                     ).queue();
