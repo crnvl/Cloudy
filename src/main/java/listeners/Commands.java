@@ -2,25 +2,14 @@ package listeners;
 
 import audio.GuildMusicManager;
 import audio.TrackScheduler;
-import com.github.connyscode.ctils.jTrack.Track;
-import com.github.connyscode.ctils.jTrack.backend.types.SearchResult;
-import com.wrapper.spotify.SpotifyApi;
-import com.wrapper.spotify.exceptions.SpotifyWebApiException;
-import com.wrapper.spotify.model_objects.specification.Playlist;
-import com.wrapper.spotify.requests.data.playlists.GetPlaylistRequest;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import org.apache.hc.core5.http.ParseException;
 import org.jetbrains.annotations.NotNull;
-import spotify.ClientAccess;
 import utilities.Setup;
 
 import java.awt.*;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static core.Main.jTrackC;
@@ -36,7 +25,6 @@ public class Commands extends ListenerAdapter {
             JoinVoice joinVoice;
             switch (args[0]) {
                 case "next":
-                    joinVoice = new JoinVoice();
 
                     trackScheduler = new TrackScheduler(GuildMusicManager.player);
                     trackScheduler.clear();
