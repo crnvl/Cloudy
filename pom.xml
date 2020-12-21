@@ -29,6 +29,12 @@
             <artifactId>spotify-web-api-java</artifactId>
             <version>6.5.1</version>
         </dependency>
+        <dependency>
+            <!-- jTrack - Collecting Track Data @ https://github.com/ConnysCode/jTrack -->
+            <groupId>com.github.connyscode.ctils</groupId>
+            <artifactId>jtrack</artifactId>
+            <version>1.0.5.1</version>
+        </dependency>
     </dependencies>
 
     <repositories>

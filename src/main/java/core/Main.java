@@ -1,5 +1,6 @@
 package core;
 
+import com.github.connyscode.ctils.jTrack.jTrackClient;
 import listeners.Commands;
 import listeners.JoinVoice;
 import net.dv8tion.jda.api.JDA;
@@ -19,8 +20,10 @@ import javax.security.auth.login.LoginException;
 public class Main extends ListenerAdapter {
 
     public static JDA jda;
+    public static jTrackClient jTrackC;
 
     public static void main(String[] args) throws LoginException, ParseException {
+        jTrackC = new jTrackClient();
         Setup.playlistInit();
         ClientAccess.clientCredentials_Sync();
 
